@@ -1,8 +1,13 @@
 package com.example.querydslstudy
 
 import com.example.querydslstudy.entity.Member
+import com.example.querydslstudy.entity.QMember
 import com.example.querydslstudy.entity.Team
+import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.persistence.EntityManager
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -15,8 +20,8 @@ class QueryDslBasicStudy {
     @Autowired
     lateinit var entityManager: EntityManager
 
-    @Test
-    fun testEntity(){
+    @BeforeEach
+    fun before(){
         val teamA = Team(name = "teamA")
         val teamB = Team(name = "teamB")
         entityManager.persist(teamA)
@@ -34,5 +39,30 @@ class QueryDslBasicStudy {
 
         entityManager.flush()
         entityManager.clear()
+    }
+
+    @Test
+    @DisplayName("JPQL 시작")
+    fun startJPQL(){
+        //member1을 찾아라
+        val findMember = entityManager.createQuery("select m from Member m where m.username = :username", Member::class.java)
+            .setParameter("username", "member1")
+
+        assertEquals(findMember.singleResult.username, "member1")
+    }
+
+    @Test
+    @DisplayName("querydsl 시작")
+    fun startQuerydsl(){
+        val queryFactory = JPAQueryFactory(entityManager)
+        val m = QMember.member
+
+        val findMember = queryFactory
+            .select(m)
+            .from(m)
+            .where(m.username.eq("member1"))
+            .fetchOne()
+
+        assertEquals(findMember?.username, "member1")
     }
 }
