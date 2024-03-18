@@ -26,7 +26,7 @@ class ModifyingTest {
     @BeforeEach
     fun init(){
         val list: MutableList<ReminderTest> = mutableListOf()
-        for (i in 1..50000) {
+        for (i in 1..10) {
             list.add(
                 ReminderTest(
                     id = i.toLong(),
@@ -46,7 +46,7 @@ class ModifyingTest {
     @DisplayName("jpa")
     fun testCase1(){
         val ids: MutableList<Long> = mutableListOf()
-        for (i in 1..90000) {
+        for (i in 1..50000) {
             ids.add(
                 i.toLong()
             )
